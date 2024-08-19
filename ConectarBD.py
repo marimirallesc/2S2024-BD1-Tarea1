@@ -21,10 +21,8 @@ class MssqlConnection(object):
         return conn
 
     def operate_database(self):
-   
         connect = self.connect_mssql()
         cursor = connect.cursor()
-
         # example select login user
         #cursor.execute("exec sp_helplogins;")
         #user_list = [i[0] for i in cursor.fetchall()]
@@ -33,24 +31,41 @@ class MssqlConnection(object):
         # while row: 
         #     print(row)
         #     row = cursor.fetchone()
+        connect.close()
 
 
-        # Listar Empleados
+    def listarEmpleados(self): 
+        connect = self.connect_mssql()
+        cursor = connect.cursor()
+
         cursor.execute("EXECUTE [dbo].[ListarEmpleados] 0")
-
         print(cursor.fetchall() )
         cursor.nextset()
         print(cursor.fetchall() )
 
+        connect.close()
 
-        # Insertar Empleado
-        # cursor.execute("EXECUTE [dbo].[InsertarEmpleado] Randy, 300000, 0")
 
-        # print(cursor.fetchall() )
-            
+    def insertarEmpleado(self, inNombre, inSalario):  
+        connect = self.connect_mssql()
+        cursor = connect.cursor()
+
+        InsertarEmpleado = "EXECUTE [dbo].[InsertarEmpleado] @inNombre = ?, @inSalario = ?, @OutResult = 0"
+        datos = (inNombre, inSalario)
+        cursor.execute(InsertarEmpleado, datos)
+        print(cursor.fetchall() )
+        # Call commit() method to save changes to the database 
+        # connect.commit()  # No parece necesario
+
         connect.close()
 
 
 if __name__ == '__main__':
-    MssqlConnection().operate_database()
+    #MssqlConnection().operate_database()
+    nombre = 'Zarick Benavides'
+    salario = 400000
+
+    MssqlConnection().insertarEmpleado(nombre, salario)
+
+    MssqlConnection().listarEmpleados()
 
