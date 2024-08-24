@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let valid = true;
 
         // Validar el nombre (solo caracteres alfabéticos y espacios)
-        const nombreRegex = /^[A-Za-z\s]+$/;
+        const nombreRegex = /^[A-Za-z\s-]+$/;
         if (!nombreRegex.test(nombreInput.value)) {
-            alert('El nombre solo puede contener caracteres alfabéticos y espacios.');
+            alert('El nombre solo puede contener caracteres alfabéticos, espacios o guiones.');
             valid = false;
         }
 
