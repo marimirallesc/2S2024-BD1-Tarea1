@@ -22,41 +22,47 @@ class MssqlConnection:
         cursor = connect.cursor()   
         
         cursor.execute("EXECUTE [dbo].[ListarEmpleados] 0")
-        empleados = cursor.fetchall()
         
-        cursor.nextset()
-        empleados = cursor.fetchall()
-        
-        #print('Empleados: /n', empleados)
-
-        connect.close()
-        return [{'Id': row[0], 'Nombre': row[1], 'Salario': float(row[2])} for row in empleados]
+        if cursor.fetchall()[0][0] == 50005:    #Error en la BD
+            cursor.close()
+            connect.close()
+            return 50005
+        else:     
+            cursor.nextset()
+            empleados = cursor.fetchall()        
+            #print('Empleados: ', empleados)
+            cursor.close()
+            connect.close()
+            return [{'Id': row[0], 'Nombre': row[1], 'Salario': float(row[2])} for row in empleados]
 
     def insertarEmpleado(self, nombre, salario):
         try:
             connect = self.connect_mssql()
             cursor = connect.cursor()
 
-            # Ejecución del procedimiento almacenado con los nombres correctos de parámetros
             cursor.execute("""
-                DECLARE @OutResult INT;
-                EXECUTE [dbo].[InsertarEmpleado] @inNombre=?, @inSalario=?, @OutResult=@OutResult OUTPUT;
+                EXECUTE [dbo].[InsertarEmpleado] @inNombre=?, @inSalario=?, @OutResult=0;
                 """, (nombre, salario))
-
+ 
+            resultado = cursor.fetchall()[0][0]
             connect.commit()
             cursor.close()
             connect.close()
-            return 0  # Retorna 0 si todo fue exitoso
+
+            # Retorna 0 si todo fue exitoso o 50006 si el Empleado ya existe
+            return  resultado
+
         except pyodbc.Error as ex:
             print(f"Error inserting employee: {ex}")
             return -1  # Retorna -1 si hubo un error
 
 if __name__ == '__main__':
     # Ejemplo de uso
-    nombre = 'Penelope Cruz'
+    nombre = 'Pepe Cruz'
     salario = 500000
 
     conexion = MssqlConnection()
+
     #conexion.insertarEmpleado(nombre, salario)
 
     empleados = conexion.listarEmpleados()  # Asegúrate de llamar a listarEmpleados

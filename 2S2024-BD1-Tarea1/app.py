@@ -16,8 +16,12 @@ def insertar():
 def listar_empleados():
     try:
         db = MssqlConnection()
-        empleados = db.listarEmpleados()  # Asegúrate de que esta función retorne la lista de empleados correctamente
-        return jsonify(empleados)
+        empleados = db.listarEmpleados()
+        if empleados == 50005:  #Error en la BD
+            print(f"Error al listar empleados: {e}")
+            return jsonify({'error': str(e)})
+        else:
+            return jsonify(empleados)
     except Exception as e:
         print(f"Error al listar empleados: {e}")  # Agrega un mensaje de error para depuración
         return jsonify({'error': str(e)})
@@ -30,10 +34,12 @@ def insertar_empleado():
         salario = data.get('salario')
         
         db = MssqlConnection()
-        result = db.insertarEmpleado(nombre, salario)
+        resultado = db.insertarEmpleado(nombre, salario)
         
-        if result == 0:
+        if resultado == 0:
             return jsonify({'success': True})
+        elif resultado == 50006:
+            return jsonify({'success': False, 'message': 'El empleado ya existe'})
         else:
             return jsonify({'success': False, 'message': 'Error al insertar el empleado'})
     except Exception as e:
