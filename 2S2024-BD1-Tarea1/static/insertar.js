@@ -4,10 +4,16 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (event) => {
         event.preventDefault(); // Previene el envío normal del formulario
         
-        const nombre = document.getElementById('nombre').value;
-        const salario = document.getElementById('salario').value;
-
         try {
+            const valid = validaciones();   // Realizar validaciones 
+            if (!valid) {   
+                console.log('Error datos de entrada incorrectos');
+                return;     // Si las validaciones fallan, detener la ejecucion
+            }
+
+            const nombre = document.getElementById('nombre').value;
+            const salario = document.getElementById('salario').value;
+
             const response = await fetch('/insertar_empleado', {
                 method: 'POST',
                 headers: {
