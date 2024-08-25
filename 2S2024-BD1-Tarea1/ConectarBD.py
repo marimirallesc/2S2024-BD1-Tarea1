@@ -23,17 +23,19 @@ class MssqlConnection:
         
         cursor.execute("EXECUTE [dbo].[ListarEmpleados] 0")
         
-        if cursor.fetchall()[0][0] == 50005:    #Error en la BD
-            cursor.close()
-            connect.close()
-            return 50005
-        else:     
+        if cursor.fetchall()[0][0] == 0: 
             cursor.nextset()
             empleados = cursor.fetchall()        
-            #print('Empleados: ', empleados)
             cursor.close()
             connect.close()
+            #print('Empleados: ', empleados)
             return [{'Id': row[0], 'Nombre': row[1], 'Salario': float(row[2])} for row in empleados]
+
+        else:   # Error en la BD
+            cursor.close()
+            connect.close()
+            return 50005    
+
 
     def insertarEmpleado(self, nombre, salario):
         try:
@@ -58,14 +60,11 @@ class MssqlConnection:
 
 if __name__ == '__main__':
     # Ejemplo de uso
-    nombre = 'Pepe Cruz'
-    salario = 500000
 
-    conexion = MssqlConnection()
+    #conexion = MssqlConnection()
 
+    #nombre = 'Pepe Cruz'
+    #salario = 500000
     #conexion.insertarEmpleado(nombre, salario)
-
-    empleados = conexion.listarEmpleados()  # Asegúrate de llamar a listarEmpleados
-    
-    
-    #listar = MssqlConnection().listarEmpleados()
+    #empleados = conexion.listarEmpleados()
+    MssqlConnection().listarEmpleados()

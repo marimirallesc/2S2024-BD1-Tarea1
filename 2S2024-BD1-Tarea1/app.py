@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # Asegúrate de que esto esté presente
+    return render_template('index.html')  
 
 @app.route('/insertar/')
 def insertar():
@@ -18,8 +18,7 @@ def listar_empleados():
         db = MssqlConnection()
         empleados = db.listarEmpleados()
         if empleados == 50005:  #Error en la BD
-            print(f"Error al listar empleados: {e}")
-            return jsonify({'error': str(e)})
+            raise Exception("Lista de empleados no disponible")
         else:
             return jsonify(empleados)
     except Exception as e:
